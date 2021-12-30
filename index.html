@@ -6,140 +6,22 @@
     <title>Document</title>
   </head>
   <body>
-    <button id="button">Record</button>
+    <br />
+    <button id="button">点击开始canvas动画并录制视频</button>
+    <br />
+    <br />
 
-    <div>
-      <canvas id="canvas" width="600" height="600"></canvas>
-      <video id="video" width="600" height="600" controls></video>
+    <div style="display: flex">
+      <div
+        id="container"
+        style="width: 600px; height: 600px; margin-right: 40px"
+      ></div>
+      <video id="video" width="600" height="600" controls hidden></video>
     </div>
 
-    <script>
-      function startCanvasAnim() {
-        let stopped = false;
-
-        const canvas = document.querySelector("canvas");
-        const ctx = canvas.getContext("2d");
-        const { width, height } = canvas;
-
-        ctx.fillStyle = "red";
-
-        function draw(rotation = 0) {
-          ctx.clearRect(0, 0, 1000, 1000);
-          ctx.save();
-          ctx.translate(width / 2, height / 2);
-          ctx.rotate(rotation);
-          ctx.translate(-width / 2, -height / 2);
-          ctx.beginPath();
-          ctx.rect(200, 200, 200, 200);
-          ctx.fill();
-          ctx.restore();
-        }
-
-        function update(t) {
-          if (!stopped) {
-            draw(t / 500);
-            requestAnimationFrame(update);
-          }
-        }
-
-        update(0);
-
-        return () => {
-          stopped = true;
-        };
-      }
-
-      class AudioPlay {
-        constructor(url) {
-          const el = document.createElement("audio");
-          el.src = url;
-          el.muted = true;
-          el.crossOrigin = "anonymous";
-
-          this.el = el;
-        }
-
-        ready(callback) {
-          this.el.oncanplay = () => {
-            const stream = this.el.captureStream();
-            const tracks = stream.getAudioTracks();
-            callback({ stream, tracks });
-          };
-        }
-
-        play() {
-          return this.el.play();
-        }
-
-        stop() {
-          return this.el.pause();
-        }
-      }
-
-      class CanvasRecorder {
-        constructor(canvas, fps = 30) {
-          const dataChunks = [];
-          const stream = canvas.captureStream(fps);
-          const recorder = new MediaRecorder(stream);
-
-          recorder.ondataavailable = (e) => {
-            console.log(e);
-
-            if (e.data.size > 0) {
-              dataChunks.push(e.data);
-            }
-          };
-
-          this.stream = stream;
-          this.recorder = recorder;
-          this.dataChunks = dataChunks;
-        }
-
-        start() {
-          this.recorder.start();
-        }
-
-        stop() {
-          return new Promise((resolve) => {
-            this.recorder.onstop = () => {
-              resolve();
-            };
-            this.recorder.stop();
-          });
-        }
-
-        getObjectURL() {
-          return URL.createObjectURL(new Blob(this.dataChunks));
-        }
-      }
-
-      const audio = new AudioPlay(
-        "https://s4.ssl.qhres.com/static/8cce395a1e99ad3f.mp3"
-      );
-
-      audio.ready(({ tracks }) => {
-        const recorder = new CanvasRecorder(document.getElementById("canvas"));
-        recorder.stream.addTrack(tracks[0]);
-
-        document.getElementById("button").onclick = () => {
-          const output = document.getElementById("video");
-          output.autoplay = true;
-          output.srcObject = recorder.stream;
-
-          audio.play();
-          recorder.start();
-          const stopAnim = startCanvasAnim();
-
-          setTimeout(() => {
-            audio.stop();
-            stopAnim();
-            recorder.stop().then(() => {
-              output.srcObject = null;
-              output.src = recorder.getObjectURL();
-            });
-          }, 5 * 1000);
-        };
-      });
-    </script>
+    <script src="https://unpkg.com/spritejs@3/dist/spritejs.es.min.js"></script>
+    <script src="https://unpkg.com/sprite-extend-3d/dist/sprite-extend-3d.js"></script>
+    <script src="./cube-map.js"></script>
+    <script src="./index.js"></script>
   </body>
 </html>
