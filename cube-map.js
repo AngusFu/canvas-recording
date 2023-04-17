@@ -18,7 +18,7 @@ const gl = layer.gl;
 
 const boxImages = [
   "https://p1.ssl.qhimg.com/d/inn/b61950e9faba/posx.jpg",
-  "https://p5.ssl.qhimg.com/d/inn/b61950e9faba/negx.jpg",
+  "https://p0.ssl.qhimg.com/d/inn/b61950e9faba/negx.jpg",
   "https://p1.ssl.qhimg.com/d/inn/b61950e9faba/posy.jpg",
   "https://p4.ssl.qhimg.com/d/inn/b61950e9faba/negy.jpg",
   "https://p0.ssl.qhimg.com/d/inn/b61950e9faba/posz.jpg",
